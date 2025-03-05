@@ -12,10 +12,8 @@ load_dotenv()
 class InternetSpeedTwitterBot:
 
     def __init__(self):
-        self.chrome_options = webdriver.ChromeOptions()
-        self.chrome_options.add_experimental_option("detach", True)
 
-        self.driver = webdriver.Chrome(self.chrome_options)
+        self.driver = webdriver.Chrome()
         self.down = 0
         self.up = 0
 
@@ -30,12 +28,48 @@ class InternetSpeedTwitterBot:
         time.sleep(120)
         down_speed = self.driver.find_element(By.CLASS_NAME, "download-speed")
         up_speed = self.driver.find_element(By.CLASS_NAME, "upload-speed")
-        self.down = int(down_speed.text)
-        self.up = int(up_speed.text)
+        self.down = down_speed.text
+        self.up = up_speed.text
+
 
 
     def tweet_at_provider(self):
-        pass
+        self.driver.get("https://x.com/home")
+
+        time.sleep(5)
+        user_name_input = self.driver.find_element(By.NAME, "text")
+        user_name_input.send_keys(os.getenv("X_EMAIL"))
+        self.driver.find_element(By.XPATH, "/html/body/div/div/div/div[1]/div/div/div/div/div/div/div[2]/div[2]"
+                                           "/div/div/div[2]/div[2]/div/div/div/button[2]").click()
+
+        time.sleep(2)
+        phone_input = self.driver.find_element(By.NAME, "text")
+        phone_input.send_keys(os.getenv("X_PHONE"))
+        phone_input.send_keys(Keys.ENTER)
+
+        time.sleep(2)
+        password_input = self.driver.find_element(By.NAME, "password")
+        password_input.send_keys(os.getenv("X_PASSWORD"))
+        password_input.send_keys(Keys.ENTER)
+
+        time.sleep(3)
+        self.driver.find_element(By.XPATH, "/html/body/div[1]/div/div/div[1]/div/div/div/div/div/div[2]/"
+                                           "button[2]").click()
+
+        time.sleep(3)
+        tweet = (f"Hey Internet Provider, why is my internet speed {self.down}down/{self.up}up when I pay "
+                 f"for {os.getenv("PROMISED_DOWN")}down/{os.getenv("PROMISED_UP")}up?")
+        x_input = self.driver.find_element(By.XPATH, "/html/body/div[1]/div/div/div[2]/main/div/div/div/div/div/"
+                                                     "div[3]/div/div[2]/div[1]/div/div/div/div[2]/div[1]/div/div/div/"
+                                                     "div/div/div/div/div/div/div/div/div[1]/div/div/div/div/div/div[2]"
+                                                     "/div/div/div/div")
+        x_input.send_keys(tweet)
+
+        time.sleep(3)
+        post_button = self.driver.find_element(By.CSS_SELECTOR,'[data-testid="tweetButtonInline" ')
+        post_button.click()
+
+        self.driver.quit()
 
 
 
